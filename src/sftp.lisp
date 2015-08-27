@@ -83,3 +83,10 @@ It is possible to combine `MAXFILES' and `EXTENSIONS' (retrieve 5 files with ext
     (ssh2.debug "Trying to delete remote file ~A" remote-path)
     (let ((result (libssh2-sftp-unlink-ex sftp remote-path)))
       (ssh2.debug "Deleting ~A resulted in ~A." remote-path result))))
+
+(defun sftp-rename (ssh-connection remote-path new-path)
+  "Rename a remote file `REMOTE-PATH' on the server to which we are connected with `SSH-CONNECTION' to the new path `NEW-PATH' overwriting a possibly existing file at that location."
+  (with-sftp (sftp ssh-connection)
+    (ssh2.debug "Trying to rename remote file ~A" remote-path)
+    (let ((result (libssh2-sftp-rename-ex sftp remote-path new-path 7)))
+      (ssh2.debug "Renaming ~A to ~A resulted in ~A." remote-path new-path result))))
