@@ -1,8 +1,22 @@
+dist: trusty
+sudo: required
+
 language: common-lisp
 
 env:
   matrix:
     - LISP=sbcl
+
+addons:
+  # apt:
+  #  packages:
+  #    # for gRPC
+  #    - autoconf
+  #    - build-essential
+  #    - libtool
+  ssh_known_hosts:
+    - localhost
+    - 0.0.0.0
 
 install:
   # Install cl-travis
