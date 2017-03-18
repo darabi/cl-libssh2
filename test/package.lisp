@@ -23,6 +23,7 @@
                  (libssh2::ssh-unknown-hostkey (lambda (c) (declare (ignore c)) (invoke-restart 'accept-always) t))
                  (libssh2::ssh-authentication-failure (lambda (c) (declare (ignore c)) (invoke-restart 'accept-always) t)))
     (progn
+      (hu.dwim.logger:set-log-level (hu.dwim.logger::find-logger 'libssh2::ssh2) hu.dwim.logger::+dribble+)
       (unit)
       (integration))))
 

@@ -8,12 +8,11 @@ env:
     - LISP=sbcl
 
 addons:
-  # apt:
-  #  packages:
-  #    # for gRPC
-  #    - autoconf
-  #    - build-essential
-  #    - libtool
+  apt:
+   packages:
+     - openssh-server
+     - openssl
+     - libssh2-1
   ssh_known_hosts:
     - localhost
     - 0.0.0.0
@@ -21,12 +20,23 @@ addons:
 install:
   # Install cl-travis
   - curl https://raw.githubusercontent.com/luismbo/cl-travis/master/install.sh | bash
-  # Install the SSH server, openssl tools, and libssh2
-  - sudo apt-get install -y openssh-server openssl libssh2-1
   # create a group for testing
-  - sudo groupadd ssh2test
-  - sudo useradd -g ssh2test -p $(openssl passwd "test1") test1
-  - sudo useradd -g ssh2test -p $(openssl passwd "test2") test2
+  - sudo addgroup ssh2test
+  - sudo adduser --group ssh2test test1 <<EOF
+    test1
+    test1
+    EOF
+  - sudo adduser --group ssh2test test2 <<EOF
+    test2
+    test2
+    EOF
+  - sudo ssh-keyscan -t $TRAVIS_SSH_KEY_TYPES -H localhost 2>&1 | tee -a ~test1/.ssh/known_hosts
+  - sudo ssh-keyscan -t $TRAVIS_SSH_KEY_TYPES -H 0.0.0.0 2>&1 | tee -a ~test1/.ssh/known_hosts
+  - sudo ssh-keyscan -t $TRAVIS_SSH_KEY_TYPES -H localhost 2>&1 | tee -a ~test2/.ssh/known_hosts
+  - sudo ssh-keyscan -t $TRAVIS_SSH_KEY_TYPES -H 0.0.0.0 2>&1 | tee -a ~test2/.ssh/known_hosts
+  - sudo su - test1 -c "ssh -vvv localhost"
+  # add localhost to known_hosts
+  # - ssh-keyscan -vvv -t rsa localhost >> $HOME/.ssh/known_hosts
 
 script:
   - cl -e '(ql:quickload :hu.dwim.stefil)'
